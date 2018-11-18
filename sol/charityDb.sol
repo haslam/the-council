@@ -44,17 +44,20 @@ contract CharityDB{
         council = TheCouncil(tc);
     }
     
-    function getOrganization(address addr) public view returns (address, address, bytes32, bytes32[4], uint8, uint256){
+    function getOrganization(address addr) public view returns (address, address, string, string, uint8, uint256){
         Organization memory o = organizations[addr];
-        return (o.addr, o.submitter, o.name, o.fullName, o.t, o.otherData);
+        return (o.addr, o.submitter, string(bytes32ToBytes(o.name)), string(bytes128ToBytes(o.fullName)), o.t, o.otherData);
     }
-    function getOrganizationByName(string name) public view returns (address, address, bytes32, bytes32[4], uint8, uint256){
+    function getOrganizationByName(string name) public view returns (address, address, string, string, uint8, uint256){
         name = toUpperCase(name);
         bytes32 n = bytesToBytes32(bytes(name));
         Organization memory o = organizations[organizationAddresses[n]];
-        return (o.addr, o.submitter, o.name, o.fullName, o.t, o.otherData);
+        return (o.addr, o.submitter, string(bytes32ToBytes(o.name)), string(bytes128ToBytes(o.fullName)), o.t, o.otherData);
     }
-    function getOrganization
+    function getOrganizationAddressByName(string name) public view returns (address){
+        bytes32 n = bytesToBytes32(bytes(name));
+        return organizationAddresses[n];
+    }
     
     function validateName(string name) public pure returns (bool){
         bytes memory b = bytes(name);
@@ -187,3 +190,7 @@ contract CharityDB{
         return out;
     }
 }
+
+
+
+
