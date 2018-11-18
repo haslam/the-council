@@ -44,15 +44,15 @@ contract CharityDB{
         council = TheCouncil(tc);
     }
     
-    function getOrganization(address addr) public view returns (address, address, string, string, uint8, uint256){
+    function getOrganization(address addr) public view returns (address, address, string, uint8, uint256){
         Organization memory o = organizations[addr];
-        return (o.addr, o.submitter, string(bytes32ToBytes(o.name)), string(bytes128ToBytes(o.fullName)), o.t, o.otherData);
+        return (o.addr, o.submitter, string(bytes32ToBytes(o.name)), o.t, o.otherData);
     }
-    function getOrganizationByName(string name) public view returns (address, address, string, string, uint8, uint256){
+    function getOrganizationByName(string name) public view returns (address, address, string, uint8, uint256){
         name = toUpperCase(name);
         bytes32 n = bytesToBytes32(bytes(name));
         Organization memory o = organizations[organizationAddresses[n]];
-        return (o.addr, o.submitter, string(bytes32ToBytes(o.name)), string(bytes128ToBytes(o.fullName)), o.t, o.otherData);
+        return (o.addr, o.submitter, string(bytes32ToBytes(o.name)), o.t, o.otherData);
     }
     function getOrganizationAddressByName(string name) public view returns (address){
         bytes32 n = bytesToBytes32(bytes(name));
@@ -83,16 +83,18 @@ contract CharityDB{
         // this function assumes validateName has passed
         bytes memory b = bytes(str);
         for (uint i = 0; i < b.length; i += 1){
-            b[i] &= 0xDF;
+            if (b[i] > 0x60){
+                b[i] &= 0xDF;
+            }
         }
         return string(b);
     }
     
-    function register(uint8 t, string name, string fullName, uint256 otherData) public {
-        registerOther(msg.sender, t, name, fullName, otherData);
+    function register(uint8 t, string name, uint256 otherData) public {
+        registerOther(msg.sender, t, name, otherData);
     }
     
-    function registerOther(address user, uint8 t, string name, string fullName, uint256 otherData) public {
+    function registerOther(address user, uint8 t, string name, uint256 otherData) public {
         require(user != 0x0);
         require(validateName(name), "ERR_CHARITY_INVALID_NAME");
         require(t == 1 || t == 2, "ERR_CHARITY_INVALID_TYPE");
@@ -117,7 +119,6 @@ contract CharityDB{
         newOrg.addr = user;
         newOrg.submitter = msg.sender;
         newOrg.name = bytesToBytes32(bytes(name));
-        newOrg.fullName = bytesToBytes128(bytes(fullName));
         newOrg.t = t;
         newOrg.otherData = otherData;
         
@@ -125,25 +126,6 @@ contract CharityDB{
         organizations[user] = newOrg;
         organizationAddresses[newOrg.name] = user;
        // newOrg.name = bytesToBytes32(bytes(name));
-    }
-
-    function bytes128ToBytes(bytes32[4] b) internal pure returns (bytes) {
-        bytes memory bytesString = new bytes(128);
-        uint charCount = 0;
-        uint ii = 0;
-        for (uint i = 0; i < 128; i++) {
-            ii = i / 4;
-            byte char = byte(bytes32(uint(b[ii]) * 2 ** (8 * (i - ii * 32))));
-            if (char != 0) {
-                bytesString[charCount] = char;
-                charCount++;
-            }
-        }
-        bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (i = 0; i < charCount; i++) {
-            bytesStringTrimmed[i] = bytesString[i];
-        }
-        return bytesStringTrimmed;
     }
 
     function bytes32ToBytes(bytes32 b) internal pure returns (bytes) {
@@ -176,19 +158,6 @@ contract CharityDB{
         return out;
     }
     
-    function bytesToBytes128(bytes b) internal pure returns (bytes32[4]){
-        uint len = b.length;
-        if (len > 128){
-            len = 128;
-        }
-        bytes32[4] memory out;
-        uint i = 0;
-        for (uint ii = 0; ii < len; ii++) {
-            i = ii / 32;
-            out[i] |= bytes32(b[ii] & 0xFF) >> ((ii - (i * 32)) * 8);
-        }
-        return out;
-    }
 }
 
 

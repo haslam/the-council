@@ -19,8 +19,8 @@ interface CharityDB{
     /*
         event onRegistered(address indexed addr, address indexed submitter, bytes32 name, uint8 t, uint256 otherData);
     */
-    function getOrganization(address addr) external view returns (address, address, string, string, uint8, uint256);
-    function getOrganizationByName(string name) external view returns (address, address, string, string, uint8, uint256);
+    function getOrganization(address addr) external view returns (address, address, string, uint8, uint256);
+    function getOrganizationByName(string name) external view returns (address, address, string, uint8, uint256);
     function getOrganizationAddressByName(string name) external view returns (address);
 }
 
@@ -44,7 +44,6 @@ contract CharityFinaces{
             address charityAddr,
             address submitter,
             string memory name,
-            string memory fullName,
             uint8 t,
             uint256 data
         ) = charityDb.getOrganization(msg.sender);
@@ -55,6 +54,11 @@ contract CharityFinaces{
         ) = council.getTrustLevel(msg.sender);
         require(trustLevel > 0 && !isBlacklisted, "ERR_CHARITY_UNTRUSTWORTHY");
         _;
+    }
+    
+    struct Donor {
+        mapping (address => uint256) charityDonations;
+        uint256 totalDonations;
     }
     
     struct Refugee {
@@ -72,6 +76,7 @@ contract CharityFinaces{
         uint256 totalFundsSpent;
     }
     
+    mapping (address => Donor) donors;
     mapping (address => Refugee) refugees;
     mapping (address => CharityFunds) charityFunds;
     
@@ -129,17 +134,16 @@ contract CharityFinaces{
     
     // refugee functions
     
-    function donatedFundsOf(address refugee) public view returns(uint256){
+    function donatedPayoutsOf(address refugee) public view returns(uint256){
         uint256(int256(charityFunds[ refugees[refugee].charity ].profitPerShare * refugees[refugee].shares) - refugees[refugee].payout) / roundingMagnitude;
     }
     
-    function spendDonatedFunds(address to, uint256 amount) public{
-        require(amount >= donatedFundsOf(msg.sender), "ERR_CHARITY_CANT_AFFORD");
+    function spendDonatedPayouts(address to, uint256 amount) public{
+        require(amount >= donatedPayoutsOf(msg.sender), "ERR_CHARITY_CANT_AFFORD");
         (
             address charityAddr,
             address submitter,
             string memory name,
-            string memory fullName,
             uint8 t,
             uint256 data
         ) = charityDb.getOrganization(to);
@@ -153,6 +157,8 @@ contract CharityFinaces{
     
     // public functions
     
+    
+    
     function getCharitySpendingAmount(address charity, address merchant) public view returns (uint256){
         return charityFunds[charity].fundsSpent[merchant];
     }
@@ -165,7 +171,6 @@ contract CharityFinaces{
             address charityAddr,
             address submitter,
             string memory name,
-            string memory fullName,
             uint8 t,
             uint256 data
         ) = charityDb.getOrganization(addr);
@@ -182,10 +187,18 @@ contract CharityFinaces{
         require(trustLevel > 0 && !isBlacklisted, "ERR_CHARITY_UNTRUSTWORTHY");
         
         charityFunds[addr].totalMoneySupply += msg.value;
+        donors[msg.sender].charityDonations[addr] += msg.value;
+        donors[msg.sender].totalDonations += msg.value;
         emit onDonated(msg.sender, charityAddr, msg.value);
     }
     function donateByName(string name) public payable {
         donateByAddress(charityDb.getOrganizationAddressByName(name));
+    }
+    function donationsOf(address user, address charity) public view returns(uint256) {
+        return donors[user].charityDonations[charity];
+    }
+    function totalDonationsOf(address user) public view returns(uint256) {
+        return donors[user].totalDonations;
     }
 }
 

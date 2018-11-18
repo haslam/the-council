@@ -5,7 +5,7 @@ contract TheCouncil{
 		_;
 	}
 	modifier notBlacklisted() {
-	    require(!blacklist[msg.sender], "ERR_COUNCIL_BLACKLISTED");
+	    require(!blacklist[msg.sender], "ERR_COUNCIL_BLACKLISTED");a
 	    _;
 	}
 	
