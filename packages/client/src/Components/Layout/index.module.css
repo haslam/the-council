@@ -1,0 +1,5 @@
+.grid {
+  display: grid;
+  grid-template-columns: max-content min-content max-content;
+  grid-template-rows: max-content min-content max-content;
+}
