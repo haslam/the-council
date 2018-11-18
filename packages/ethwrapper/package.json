@@ -1,0 +1,30 @@
+{
+  "name": "ethwrapper",
+  "version": "0.0.0",
+  "description": "Wraps eth",
+  "keywords": [
+    "eth",
+    "wraps"
+  ],
+  "author": "Aritz Beobide-Cardinal <aritz@aritzcracker.ca>",
+  "homepage": "https://github.com/thecouncil/the-council#readme",
+  "license": "ISC",
+  "main": "lib/ethwrapper.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://ARitz-Cracker@github.com/thecouncil/the-council.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/thecouncil/the-council/issues"
+  }
+}
