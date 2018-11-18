@@ -1,5 +1,16 @@
 .grid {
+  width: 100%;
+  height: 100%;
   display: grid;
-  grid-template-columns: max-content min-content max-content;
-  grid-template-rows: max-content min-content max-content;
+  grid-template-rows: min-content 2em min-content max-content;
+}
+
+.gridMenu {
+  grid-row: 1 / 2;
+  padding: 15px;
+  background-color: #1B1C1D;
+}
+
+.gridDisplay {
+  grid-row: 3 / 4;
 }

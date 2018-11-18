@@ -25,8 +25,6 @@ function App() {
     }
   });
 
-  console.log('rendering App');
-
   if (isErrored) {
     return (<div className="App">
       Waiting for MetaMask to be installed...

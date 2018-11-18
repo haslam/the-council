@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Card, Icon } from 'semantic-ui-react'
-import { getTrustData } from 'ethwrapper';
+import { Icon, Item, Divider } from 'semantic-ui-react'
 import Avatar from '../Components/Avatar';
+import UpdateXButton from './UpdateXButton';
+import { getCurrentAccount, getTrustData, markUser, unmarkUser, vouchForUser, unVouchForUser } from 'ethwrapper';
 
 PropTypes.shape({
   trust: PropTypes.number.isRequired,
@@ -24,23 +25,32 @@ export default function UserCard({ hash }) {
     }));
   }, [hash]);
 
-  return (<Card>
-    {targetUser ? targetUser.avatar : ''}
-    <Card.Content>
-      <Card.Header style={{ wordWrap: 'break-word' }}>
+  return (<Item>
+    {targetUser ? targetUser.avatar : <Item.Image size="medium" />}
+    <Item.Content>
+      <Item.Header style={{ wordWrap: 'break-word' }}>
         {targetUser ? targetUser.hash : 'Loading...'}
-      </Card.Header>
-    </Card.Content>
-    <Card.Content extra>
-      <a>
-        <Icon name='user' />
-        Trust Ranking {targetUser ? targetUser.trustLevel : 'Loading...'}
-      </a>
-      <br />
-      <a>
-        <Icon name='user' />
-        {targetUser ? (targetUser.blacklisted ? 'Blacklisted' : 'Not Blacklisted') : 'Loading...'}
-      </a>
-    </Card.Content>
-  </Card>);
+      </Item.Header>
+      <Item.Extra>
+        <a>
+          <Icon name='user' />
+          Trust Ranking {targetUser ? targetUser.trustLevel : 'Loading...'}
+        </a>
+        <br />
+        <a>
+          <Icon name='user' />
+          {targetUser ? (targetUser.blacklisted ? 'Blacklisted' : 'Not Blacklisted') : 'Loading...'}
+        </a>
+        <Divider />
+        {targetUser
+          ? <>
+            <UpdateXButton user={targetUser} executor={vouchForUser} text="Add Trust" />
+            <UpdateXButton user={targetUser} executor={unVouchForUser} text="Remove Trust" />
+            <UpdateXButton user={targetUser} executor={markUser} text="Blacklist User" />
+            <UpdateXButton user={targetUser} executor={unmarkUser} text="UnBlacklist User" />
+          </>
+          : ''}
+      </Item.Extra>
+    </Item.Content>
+  </Item>);
 }

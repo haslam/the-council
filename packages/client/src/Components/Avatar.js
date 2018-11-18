@@ -6,7 +6,6 @@ export default function Avatar({ hash }) {
 
   useEffect(() => {
     const dimension = 290;
-    console.log('Fetching user based on ', hash);
     const ref = document.getElementById(id);
     const svg = generateNewIdenticon(hash, 290);
     [...svg.children].forEach(svgElement => {

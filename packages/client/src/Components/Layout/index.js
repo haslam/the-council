@@ -1,10 +1,14 @@
 import React from 'react';
 import styles from './index.module.css';
+import MenuBar from '../MenuBar';
 
 export default function Layout({ children }) {
-  return (<header className="App-header">
+  return (
     <div className={styles.grid}>
-      {children}
+      <MenuBar className={styles.gridMenu} />
+      <div className={styles.gridDisplay}>
+        {children}
+      </div>
     </div>
-  </header>);
+  );
 }
