@@ -308,6 +308,9 @@ let EthWrapper = {
 		loaded = true;
 		theCouncil = web3.eth.contract(contractABI).at(contractAddress);
 	},
+	getBigNumberConstructor(){
+		return BigNumber;
+	},
 	getCurrentAccount(){
 		assert(loaded, "Not loaded");
 		return web3.toChecksumAddress(currentAccount);
