@@ -1,6 +1,6 @@
 'use strict';
 
-const contractAddress = "0x07439d221e10d29a29994ec4f23667ba5aafa36e";
+const contractAddress = "0x98a79B3871Eed82AB7f9C94B3D7E57C6bea9028d";
 const contractABI = [
 	{
 		"constant": false,
@@ -220,42 +220,7 @@ const contractABI = [
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
-	},/*
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "previouslyTrustedByList",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			},
-			{
-				"name": "",
-				"type": "address"
-			},
-			{
-				"name": "",
-				"type": "address"
-			},
-			{
-				"name": "",
-				"type": "address"
-			},
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},*/
+	},
 	{
 		"constant": true,
 		"inputs": [
@@ -297,6 +262,7 @@ const assert = function(e, msg){
 }
 
 let loaded = false;
+let callLoad = false;
 let currentAccount;
 let accountChecker;
 let web3;
@@ -307,6 +273,10 @@ let loginListeners = [];
 
 let EthWrapper = {
 	async load(){
+		if (callLoad){
+			throw new Error("Don't call load multiple times");
+		}
+		callLoad = true;
 		// Modern dapp browsers...
 		if (window.ethereum) {
 			web3 = new Web3(ethereum);
@@ -353,7 +323,7 @@ let EthWrapper = {
 		}
 	},
 	removeLoginCallback(func){
-		assert(loaded, "NotLoaded")
+		assert(loaded, "Not Loaded");
 		for (let i = 0; i < loginListeners.length; i += 1) {
 			if (loginListeners[i] == func){
 				delete loginListeners[i];
@@ -370,6 +340,7 @@ let EthWrapper = {
 	},
 	// Council-specific data
 	getTrustData(address) {
+		assert(loaded, "Not Loaded");
 		return new Promise((resolve, reject) => {
 			theCouncil.getTrustData(address,(err, result) => {
 				if (err) {
@@ -386,6 +357,7 @@ let EthWrapper = {
 		})
 	},
 	vouchForUser(address){
+		assert(loaded, "Not Loaded");
 		return new Promise((resolve, reject) => {
 			theCouncil.vouchForUser(address,(err, txHash) => {
 				if (err) {
@@ -398,6 +370,7 @@ let EthWrapper = {
 		})
 	},
 	unVouchForUser(address){
+		assert(loaded, "Not Loaded");
 		return new Promise((resolve, reject) => {
 			theCouncil.unVouchForUser(address,(err, txHash) => {
 				if (err) {
@@ -410,6 +383,7 @@ let EthWrapper = {
 		})
 	},
 	markUser(address){
+		assert(loaded, "Not Loaded");
 		return new Promise((resolve, reject) => {
 			theCouncil.markUser(address,(err, txHash) => {
 				if (err) {
@@ -422,6 +396,7 @@ let EthWrapper = {
 		})
 	},
 	unmarkUser(address){
+		assert(loaded, "Not Loaded");
 		return new Promise((resolve, reject) => {
 			theCouncil.unmarkUser(address,(err, txHash) => {
 				if (err) {
